@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CallApp</string>
+
+    <string name="incoming_call_notification_title_template">%1$s is calling</string>
 </resources>

@@ -4,6 +4,8 @@ import android.telecom.ConnectionRequest
 import android.telecom.ConnectionService
 import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager.PRESENTATION_ALLOWED
+import com.veglad.callapp.connection.Connection
+import timber.log.Timber
 
 class ConnectionService : ConnectionService() {
 
@@ -11,7 +13,8 @@ class ConnectionService : ConnectionService() {
         connectionManagerPhoneAccount: PhoneAccountHandle?,
         request: ConnectionRequest?
     ): Connection {
-        return Connection().apply {
+        Timber.tag("com.veglad.callapp").d("onCreateOutgoingConnection")
+        return Connection(applicationContext).apply {
 //            connectionProperties = PROPERTY_SELF_MANAGED | API 25
 //            setConnectionCapabilities(int) if app supports onHold
             setCallerDisplayName("TEST NAME", PRESENTATION_ALLOWED)
@@ -22,6 +25,7 @@ class ConnectionService : ConnectionService() {
         connectionManagerPhoneAccount: PhoneAccountHandle?,
         request: ConnectionRequest?
     ) {
+        Timber.tag("com.veglad.callapp").e("onCreateOutgoingConnectionFailed")
         super.onCreateOutgoingConnectionFailed(connectionManagerPhoneAccount, request)
     }
 
@@ -29,7 +33,8 @@ class ConnectionService : ConnectionService() {
         connectionManagerPhoneAccount: PhoneAccountHandle?,
         request: ConnectionRequest?
     ): Connection {
-        return Connection().apply {
+        Timber.tag("com.veglad.callapp").d("onCreateIncomingConnection")
+        return Connection(applicationContext).apply {
 //            connectionProperties = PROPERTY_SELF_MANAGED | API 25
 //            setConnectionCapabilities(int) if app supports onHold
             setCallerDisplayName("TEST NAME", PRESENTATION_ALLOWED)
@@ -42,6 +47,7 @@ class ConnectionService : ConnectionService() {
         connectionManagerPhoneAccount: PhoneAccountHandle?,
         request: ConnectionRequest?
     ) {
+        Timber.tag("com.veglad.callapp").e("onCreateIncomingConnectionFailed")
         super.onCreateIncomingConnectionFailed(connectionManagerPhoneAccount, request)
     }
 }
