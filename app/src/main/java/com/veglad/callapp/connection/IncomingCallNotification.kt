@@ -14,7 +14,6 @@ import com.veglad.callapp.IncomingCallActivity
 import com.veglad.callapp.R
 import timber.log.Timber
 
-
 class IncomingCallNotification//createNotification(context)
     (context: Context) {
 
@@ -108,5 +107,11 @@ class IncomingCallNotification//createNotification(context)
         builder.setContentTitle(title)
 
         return builder
+    }
+
+    fun clearNotification(context: Context) {
+        val notificationManager = context
+            .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(NOTIFICATION_ID)
     }
 }
