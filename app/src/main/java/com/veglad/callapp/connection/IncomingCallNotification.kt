@@ -10,7 +10,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import android.app.PendingIntent
 import android.content.Intent
-import com.veglad.callapp.IncomingCallActivity
+import com.veglad.callapp.view.IncomingCallActivity
 import com.veglad.callapp.R
 import timber.log.Timber
 
