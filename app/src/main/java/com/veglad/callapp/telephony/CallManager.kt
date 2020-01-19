@@ -1,7 +1,9 @@
-package com.veglad.callapp
+package com.veglad.callapp.telephony
 
 import android.annotation.TargetApi
 import android.os.Build
+import com.veglad.callapp.view.Call
+import com.veglad.callapp.view.mapCallFrom
 import android.telecom.Call as TelecomCall
 import timber.log.Timber
 
@@ -9,7 +11,11 @@ import timber.log.Timber
 object CallManager {
 
   private var currentCall: TelecomCall? = null
-  val onUpdateCall: ((call: Call) -> Unit)? = null
+  private var onUpdateCall: ((call: Call) -> Unit)? = null
+
+  fun setOnUpdateCall(onUpdateCall: ((call: Call) -> Unit)) {
+    this.onUpdateCall = onUpdateCall
+  }
 
   fun updateCall(telecomCall: TelecomCall?) {
     currentCall = telecomCall

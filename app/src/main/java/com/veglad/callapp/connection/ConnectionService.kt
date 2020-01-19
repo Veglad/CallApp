@@ -1,10 +1,9 @@
-package com.veglad.callapp
+package com.veglad.callapp.connection
 
 import android.telecom.ConnectionRequest
 import android.telecom.ConnectionService
 import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager.PRESENTATION_ALLOWED
-import com.veglad.callapp.connection.Connection
 import timber.log.Timber
 
 class ConnectionService : ConnectionService() {

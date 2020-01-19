@@ -46,7 +46,7 @@
 <!--        </service>-->
 
         <service
-            android:name=".CallService"
+            android:name=".telephony.CallService"
             android:permission="android.permission.BIND_INCALL_SERVICE">
             <meta-data
                 android:name="android.telecom.IN_CALL_SERVICE_UI"

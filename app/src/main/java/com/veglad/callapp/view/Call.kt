@@ -1,4 +1,4 @@
-package com.veglad.callapp
+package com.veglad.callapp.view
 
 import android.telecom.Call as TelecomCall
 

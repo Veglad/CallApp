@@ -1,4 +1,4 @@
-package com.veglad.callapp.view
+package com.veglad.callapp.data_driven
 
 class Command(private val action: () -> Unit) {
     companion object {

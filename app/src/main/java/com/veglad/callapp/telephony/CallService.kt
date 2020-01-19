@@ -1,11 +1,9 @@
-package com.veglad.callapp
+package com.veglad.callapp.telephony
 
 import android.annotation.TargetApi
-import android.content.Intent
 import android.os.Build
 import android.telecom.Call
 import android.telecom.InCallService
-import android.util.Log
 import com.veglad.callapp.connection.IncomingCallNotification
 import timber.log.Timber
 
@@ -30,6 +28,7 @@ class CallService : InCallService() {
     Timber.tag("com.veglad.callapp").d("onCallRemoved: $call")
     call.unregisterCallback(callCallback)
     CallManager.updateCall(null)
+    //TODO: Remove notification
   }
 
   private val callCallback = object : Call.Callback() {
