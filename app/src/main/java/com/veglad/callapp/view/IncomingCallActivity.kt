@@ -16,18 +16,19 @@ class IncomingCallActivity : DataDrivenActivity<IncomingCallActivity.Props>() {
 
     override fun renderProps(props: Props) {
         when(props) {
+            is Props.Connecting -> subtitleTextView.text = getString(R.string.subtitle_connecting)
+            is Props.Dialing -> subtitleTextView.text = getString(R.string.subtitle_dialing)
             is Props.Ringing -> {
+                subtitleTextView.text = getString(R.string.subtitle_ringing)
                 calleeName.text = props.callee
                 answerImageButton?.setOnClickListener { props.answer }
                 rejectImageButton?.setOnClickListener { props.reject; finish() }
             }
+            is Props.Active -> subtitleTextView.text = getString(R.string.subtitle_active)
+            is Props.Disconnected -> subtitleTextView.text = getString(R.string.subtitle_disconnected)
+            is Props.Unknown -> subtitleTextView.text = getString(R.string.subtitle_unknown)
         }
     }
-
-//    override fun onStop() {
-//        super.onStop()
-//
-//    }
 
     private fun Long.toDurationString() = String.format("%02d:%02d:%02d", this / 3600, (this % 3600) / 60, (this % 60))
 

@@ -22,6 +22,19 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Somebody LastName" />
 
+    <TextView
+        android:id="@+id/subtitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/callScreenCalleeNameColor"
+        android:textSize="18sp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/calleeName"
+        tools:text="Somebody LastName" />
+
     <ImageButton
         android:id="@+id/answerImageButton"
         android:layout_width="wrap_content"
