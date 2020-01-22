@@ -1,4 +1,4 @@
-package com.veglad.callapp.connection
+package com.veglad.callapp.telephony
 
 import android.app.Notification
 import android.app.NotificationManager
@@ -49,7 +49,9 @@ class IncomingCallNotification//createNotification(context)
 
         val notificationManager = context.getSystemService(NotificationManager::class.java)
         Timber.tag("com.veglad.callapp").d("postIncomingCallNotification")
-        notificationManager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notification)
+        notificationManager.notify(
+            NOTIFICATION_TAG,
+            NOTIFICATION_ID, notification)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -89,7 +91,9 @@ class IncomingCallNotification//createNotification(context)
                 setPriority(Notification.PRIORITY_HIGH)
             }
         } else {
-            Notification.Builder(context, NOTIFICATION_CHANNEL_ID)
+            Notification.Builder(context,
+                NOTIFICATION_CHANNEL_ID
+            )
         }
         builder.setOngoing(true)
 

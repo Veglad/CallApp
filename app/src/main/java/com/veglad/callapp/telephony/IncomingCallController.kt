@@ -1,4 +1,4 @@
-package com.veglad.callapp
+package com.veglad.callapp.telephony
 
 import com.veglad.callapp.data_driven.Command
 import com.veglad.callapp.data_driven.DataDrivenActivity

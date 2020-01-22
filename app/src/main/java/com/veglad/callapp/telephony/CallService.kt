@@ -4,7 +4,6 @@ import android.annotation.TargetApi
 import android.os.Build
 import android.telecom.Call
 import android.telecom.InCallService
-import com.veglad.callapp.connection.IncomingCallNotification
 import timber.log.Timber
 
 @TargetApi(Build.VERSION_CODES.M)
