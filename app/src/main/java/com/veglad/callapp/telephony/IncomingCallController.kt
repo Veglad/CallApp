@@ -5,6 +5,7 @@ import com.veglad.callapp.data_driven.DataDrivenActivity
 import com.veglad.callapp.telephony.CallManager
 import com.veglad.callapp.view.Call
 import com.veglad.callapp.view.IncomingCallActivity.Props
+import timber.log.Timber
 
 class IncomingCallController(
     private var propsConsumer: DataDrivenActivity<Props>?,
@@ -14,14 +15,14 @@ class IncomingCallController(
     private var callTime: Long = 0
 
     init {
-        callManager.setOnUpdateCall {
-            reduceState(it)
-            propsConsumer?.renderProps(mapCallToProps(it))
-        }
+        callManager.setOnUpdateCall(this::handleCall)
+        callManager.call?.let { handleCall(it) }
     }
 
-    fun consumerRelease() {
-        propsConsumer = null
+    private fun handleCall(call: Call) {
+        Timber.tag("IncomingCallController").d("Updated")
+        reduceState(call)
+        propsConsumer?.renderProps(mapCallToProps(call))
     }
 
     private fun mapCallToProps(call: Call) : Props {

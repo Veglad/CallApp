@@ -11,7 +11,10 @@ class ActivityCreatedListener(private val listener: AppCompatActivity.() -> Unit
 
     override fun onActivityResumed(activity: Activity?) = Unit
 
-    override fun onActivityStarted(activity: Activity?) = Unit
+    override fun onActivityStarted(activity: Activity?) {
+        require(activity is AppCompatActivity)
+        listener(activity)
+    }
 
     override fun onActivityDestroyed(activity: Activity?) = Unit
 
@@ -20,7 +23,6 @@ class ActivityCreatedListener(private val listener: AppCompatActivity.() -> Unit
     override fun onActivityStopped(activity: Activity?) = Unit
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-        require(activity is AppCompatActivity)
-        listener(activity)
+
     }
 }

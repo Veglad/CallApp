@@ -9,16 +9,12 @@ import timber.log.Timber
 @TargetApi(Build.VERSION_CODES.M)
 class CallService : InCallService() {
 
-  companion object {
-    private const val LOG_TAG = "CallService"
-  }
-
   override fun onCallAdded(call: Call) {
     super.onCallAdded(call)
     Timber.tag("com.veglad.callapp").d( "onCallAdded: $call")
     call.registerCallback(callCallback)
     val notification = IncomingCallNotification(this)
-    notification.postIncomingCallNotification(this, "Some Test Name")
+    notification.postIncomingCallNotification(this, call.details.handle.schemeSpecificPart)
     CallManager.updateCall(call)
   }
 
@@ -27,7 +23,7 @@ class CallService : InCallService() {
     Timber.tag("com.veglad.callapp").d("onCallRemoved: $call")
     call.unregisterCallback(callCallback)
     CallManager.updateCall(null)
-    //TODO: Remove notification
+    IncomingCallNotification.clearNotification(this)
   }
 
   private val callCallback = object : Call.Callback() {

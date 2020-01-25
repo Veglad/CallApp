@@ -10,7 +10,11 @@ import timber.log.Timber
 @TargetApi(Build.VERSION_CODES.M)
 object CallManager {
 
-  private var currentCall: TelecomCall? = null
+  var currentCall: TelecomCall? = null
+  var call: Call? = null
+  get() = currentCall?.let { mapCallFrom(it) }
+  private set
+
   private var onUpdateCall: ((call: Call) -> Unit)? = null
 
   fun setOnUpdateCall(onUpdateCall: ((call: Call) -> Unit)) {

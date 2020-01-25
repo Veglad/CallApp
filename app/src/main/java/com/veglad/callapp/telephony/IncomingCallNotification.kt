@@ -14,7 +14,7 @@ import com.veglad.callapp.view.IncomingCallActivity
 import com.veglad.callapp.R
 import timber.log.Timber
 
-class IncomingCallNotification//createNotification(context)
+class IncomingCallNotification
     (context: Context) {
 
     companion object {
@@ -22,6 +22,12 @@ class IncomingCallNotification//createNotification(context)
         const val NOTIFICATION_ID = 128042
         const val NOTIFICATION_TAG = "INCOMING_CALL_NOTIFICATION_TAG"
         const val NOTIFICATION_CHANNEL_NAME = "INCOMING_CALL_NOTIFICATION"
+
+        fun clearNotification(context: Context) {
+            val notificationManager = context
+                .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.cancel(NOTIFICATION_ID)
+        }
     }
 
     init {
@@ -51,7 +57,8 @@ class IncomingCallNotification//createNotification(context)
         Timber.tag("com.veglad.callapp").d("postIncomingCallNotification")
         notificationManager.notify(
             NOTIFICATION_TAG,
-            NOTIFICATION_ID, notification)
+            NOTIFICATION_ID, notification
+        )
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -71,7 +78,7 @@ class IncomingCallNotification//createNotification(context)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun initChannel() : NotificationChannel {
+    fun initChannel(): NotificationChannel {
         return NotificationChannel(
             NOTIFICATION_CHANNEL_ID,
             NOTIFICATION_CHANNEL_NAME,
@@ -83,7 +90,7 @@ class IncomingCallNotification//createNotification(context)
         pendingIntent: PendingIntent,
         context: Context,
         callee: String
-    ) : Notification.Builder {
+    ): Notification.Builder {
         // Build the notification as an ongoing high priority item; this ensures it will show as
         // a heads up notification which slides down over top of the current content.
         val builder = if (Build.VERSION.SDK_INT < 26) {
@@ -91,7 +98,8 @@ class IncomingCallNotification//createNotification(context)
                 setPriority(Notification.PRIORITY_HIGH)
             }
         } else {
-            Notification.Builder(context,
+            Notification.Builder(
+                context,
                 NOTIFICATION_CHANNEL_ID
             )
         }
@@ -111,11 +119,5 @@ class IncomingCallNotification//createNotification(context)
         builder.setContentTitle(title)
 
         return builder
-    }
-
-    fun clearNotification(context: Context) {
-        val notificationManager = context
-            .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancel(NOTIFICATION_ID)
     }
 }

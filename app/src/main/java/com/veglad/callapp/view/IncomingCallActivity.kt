@@ -21,8 +21,8 @@ class IncomingCallActivity : DataDrivenActivity<IncomingCallActivity.Props>() {
             is Props.Ringing -> {
                 subtitleTextView.text = getString(R.string.subtitle_ringing)
                 calleeName.text = props.callee
-                answerImageButton?.setOnClickListener { props.answer }
-                rejectImageButton?.setOnClickListener { props.reject; finish() }
+                answerImageButton?.setOnClickListener { props.answer?.invoke() }
+                rejectImageButton?.setOnClickListener { props.reject?.invoke(); finish() }
             }
             is Props.Active -> subtitleTextView.text = getString(R.string.subtitle_active)
             is Props.Disconnected -> subtitleTextView.text = getString(R.string.subtitle_disconnected)
