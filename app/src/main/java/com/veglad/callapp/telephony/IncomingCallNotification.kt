@@ -21,10 +21,18 @@ class IncomingCallNotification
         const val NOTIFICATION_TAG = "INCOMING_CALL_NOTIFICATION_TAG"
         const val NOTIFICATION_CHANNEL_NAME = "INCOMING_CALL_NOTIFICATION"
 
+        const val INCOMING_ACTIVITY_ACTION_KEY = "INCOMING_ACTIVITY_ANSWER_ACTION"
+        const val INCOMING_ACTIVITY_ANSWER_ACTION = "INCOMING_ACTIVITY_ANSWER_ACTION"
+        const val INCOMING_ACTIVITY_REJECT_ACTION = "INCOMING_ACTIVITY_REJECT_ACTION"
+
+        const val INCOMING_ACTIVITY_OPEN_REQUEST_KEY = 10
+        const val INCOMING_ACTIVITY_ANSWER_REQUEST_KEY = 11
+        const val INCOMING_ACTIVITY_REJECT_REQUEST_KEY = 12
+
         fun clearNotification(context: Context) {
             val notificationManager = context
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.cancel(NOTIFICATION_ID)
+            notificationManager.cancel(NOTIFICATION_TAG, NOTIFICATION_ID)
         }
     }
 
@@ -43,8 +51,7 @@ class IncomingCallNotification
             flags = Intent.FLAG_ACTIVITY_NO_USER_ACTION or Intent.FLAG_ACTIVITY_NEW_TASK
             setClass(context, IncomingCallActivity::class.java)
         }
-        val pendingIntent = PendingIntent.getActivity(context, 1, intent, 0)
-        val notification = initNotification(pendingIntent, context, callee)
+        val notification = initNotification(intent, context, callee)
 
         // Set notification as insistent to cause your ringtone to loop.
 //        notification.flags = notification.flags or Notification.FLAG_INSISTENT
@@ -65,11 +72,7 @@ class IncomingCallNotification
         mgr!!.createNotificationChannel(channel)
     }
 
-    private fun initNotification(
-        pendingIntent: PendingIntent,
-        context: Context,
-        callee: String
-    ): Notification {
+    private fun initNotification(intent: Intent, context: Context, callee: String): Notification {
         // Build the notification as an ongoing high priority item; this ensures it will show as
         // a heads up notification which slides down over top of the current content.
         val builder = if (Build.VERSION.SDK_INT < 26) {
@@ -83,6 +86,7 @@ class IncomingCallNotification
             )
         }
         builder.setOngoing(true)
+        val pendingIntent = PendingIntent.getActivity(context, INCOMING_ACTIVITY_OPEN_REQUEST_KEY, intent, 0)
 
         // Set notification content intent to take user to fullscreen UI if user taps on the
         // notification body.
@@ -98,17 +102,29 @@ class IncomingCallNotification
         val title = String.format(titleTemplate, callee)
         builder.setContentTitle(title)
 
-        val answerActionTitle = context.getString(R.string.incoming_call_notification_answer_action_title)
-        val rejectActionTitle = context.getString(R.string.incoming_call_notification_reject_action_title)
-        //TODO: Handle answer click
-        val answerAction = Notification.Action.Builder(null, answerActionTitle, pendingIntent).build()
-        //TODO: Handle reject click
-        val rejectAction = Notification.Action.Builder(null, rejectActionTitle, null).build()
-        builder.addAction(answerAction)
-        builder.addAction(rejectAction)
-
+        initActions(intent, context, builder)
         builder.setAutoCancel(true)
 
         return builder.build()
+    }
+
+    private fun initActions(intent: Intent, context: Context, builder: Notification.Builder) {
+        intent.putExtra(INCOMING_ACTIVITY_ACTION_KEY, INCOMING_ACTIVITY_ANSWER_ACTION)
+        val answerPendingIntent =
+            PendingIntent.getActivity(context, INCOMING_ACTIVITY_ANSWER_REQUEST_KEY, intent, 0)
+        val answerActionTitle =
+            context.getString(R.string.incoming_call_notification_answer_action_title)
+        val answerAction =
+            Notification.Action.Builder(null, answerActionTitle, answerPendingIntent).build()
+        builder.addAction(answerAction)
+
+        intent.putExtra(INCOMING_ACTIVITY_ACTION_KEY, INCOMING_ACTIVITY_REJECT_ACTION)
+        val rejectPendingIntent =
+            PendingIntent.getActivity(context, INCOMING_ACTIVITY_REJECT_REQUEST_KEY, intent, 0)
+        val rejectActionTitle =
+            context.getString(R.string.incoming_call_notification_reject_action_title)
+        val rejectAction =
+            Notification.Action.Builder(null, rejectActionTitle, rejectPendingIntent).build()
+        builder.addAction(rejectAction)
     }
 }
