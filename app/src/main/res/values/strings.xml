@@ -1,11 +1,15 @@
 <resources>
     <string name="app_name">CallApp</string>
 
-    <string name="incoming_call_notification_title_template">%1$s is calling</string>
     <string name="subtitle_connecting">Connecting...</string>
     <string name="subtitle_ringing">Ringing...</string>
     <string name="subtitle_dialing">Dialing...</string>
     <string name="subtitle_active">Active...</string>
     <string name="subtitle_disconnected">Disconnected</string>
     <string name="subtitle_unknown">Unkown</string>
+
+    <!-- Notification  -->
+    <string name="incoming_call_notification_title_template">%1$s is calling</string>
+    <string name="incoming_call_notification_answer_action_title">Answer</string>
+    <string name="incoming_call_notification_reject_action_title">Reject</string>
 </resources>

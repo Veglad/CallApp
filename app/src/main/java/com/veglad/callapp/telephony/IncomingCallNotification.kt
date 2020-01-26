@@ -2,8 +2,6 @@ package com.veglad.callapp.telephony
 
 import android.app.Notification
 import android.app.NotificationManager
-import android.media.AudioAttributes
-import android.media.RingtoneManager
 import android.app.NotificationChannel
 import android.content.Context
 import android.os.Build
@@ -39,58 +37,39 @@ class IncomingCallNotification
     }
 
     fun postIncomingCallNotification(context: Context, callee: String) {
+        Timber.tag("com.veglad.callapp").d("postIncomingCallNotification")
         // Create an intent which triggers your fullscreen incoming call user interface.
         val intent = Intent(Intent.ACTION_MAIN, null).apply {
             flags = Intent.FLAG_ACTIVITY_NO_USER_ACTION or Intent.FLAG_ACTIVITY_NEW_TASK
             setClass(context, IncomingCallActivity::class.java)
         }
         val pendingIntent = PendingIntent.getActivity(context, 1, intent, 0)
-        val builder = initNotificationBuilder(pendingIntent, context, callee)
+        val notification = initNotification(pendingIntent, context, callee)
 
         // Set notification as insistent to cause your ringtone to loop.
-        val notification = builder.build()
-        notification.flags = notification.flags or Notification.FLAG_INSISTENT
-
-        // TODO: Use builder.addAction(..) to add buttons to answer or reject the call.
+//        notification.flags = notification.flags or Notification.FLAG_INSISTENT
 
         val notificationManager = context.getSystemService(NotificationManager::class.java)
-        Timber.tag("com.veglad.callapp").d("postIncomingCallNotification")
-        notificationManager.notify(
-            NOTIFICATION_TAG,
-            NOTIFICATION_ID, notification
-        )
+        notificationManager?.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notification)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel(context: Context) {
-        val channel = initChannel()
-
-        val ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
-        channel.setSound(
-            ringtoneUri, AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .build()
+        val channel = NotificationChannel(
+            NOTIFICATION_CHANNEL_ID,
+            NOTIFICATION_CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_HIGH
         )
 
         val mgr = context.getSystemService(NotificationManager::class.java)
         mgr!!.createNotificationChannel(channel)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun initChannel(): NotificationChannel {
-        return NotificationChannel(
-            NOTIFICATION_CHANNEL_ID,
-            NOTIFICATION_CHANNEL_NAME,
-            NotificationManager.IMPORTANCE_HIGH
-        )
-    }
-
-    private fun initNotificationBuilder(
+    private fun initNotification(
         pendingIntent: PendingIntent,
         context: Context,
         callee: String
-    ): Notification.Builder {
+    ): Notification {
         // Build the notification as an ongoing high priority item; this ensures it will show as
         // a heads up notification which slides down over top of the current content.
         val builder = if (Build.VERSION.SDK_INT < 26) {
@@ -114,10 +93,22 @@ class IncomingCallNotification
 
         // Setup notification content.
         builder.setSmallIcon(R.drawable.ic_call)
+
         val titleTemplate = context.getString(R.string.incoming_call_notification_title_template)
         val title = String.format(titleTemplate, callee)
         builder.setContentTitle(title)
 
-        return builder
+        val answerActionTitle = context.getString(R.string.incoming_call_notification_answer_action_title)
+        val rejectActionTitle = context.getString(R.string.incoming_call_notification_reject_action_title)
+        //TODO: Handle answer click
+        val answerAction = Notification.Action.Builder(null, answerActionTitle, pendingIntent).build()
+        //TODO: Handle reject click
+        val rejectAction = Notification.Action.Builder(null, rejectActionTitle, null).build()
+        builder.addAction(answerAction)
+        builder.addAction(rejectAction)
+
+        builder.setAutoCancel(true)
+
+        return builder.build()
     }
 }
