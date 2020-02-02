@@ -8,6 +8,7 @@ import com.veglad.callapp.telephony.IncomingCallController
 import com.veglad.callapp.view.IncomingCallActivity
 import timber.log.Timber
 import timber.log.Timber.DebugTree
+import kotlin.coroutines.EmptyCoroutineContext
 
 
 class App : DataDrivenApp(), Configurator {
@@ -25,7 +26,8 @@ class App : DataDrivenApp(), Configurator {
         when (activity) {
             is IncomingCallActivity -> IncomingCallController(
                 activity,
-                CallManager
+                CallManager,
+                EmptyCoroutineContext
             )
             is MainActivity -> {}
             else -> isConfigured = false

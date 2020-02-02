@@ -47,7 +47,7 @@ class IncomingCallActivity : DataDrivenActivity<IncomingCallActivity.Props>() {
                 answerImageButton?.setOnClickListener { props.answer?.invoke() }
                 rejectImageButton?.setOnClickListener { props.reject?.invoke(); finish() }
             }
-            is Props.Active -> subtitleTextView.text = getString(R.string.subtitle_active)
+            is Props.Active -> subtitleTextView.text = props.time.toDurationString()
             is Props.Disconnected -> subtitleTextView.text = getString(R.string.subtitle_disconnected)
             is Props.Unknown -> subtitleTextView.text = getString(R.string.subtitle_unknown)
         }
