@@ -42,6 +42,7 @@ class IncomingCallController(
             ACTIVE -> {
                 if (this.job == null) {
                     this.job = startCoroutineTimer(ONE_SECOND_IN_MS, ONE_SECOND_IN_MS) {
+                        Timber.tag("IncomingCallController").d("Tick")
                         dispatch(Action.TickAction)
                     }
                 }
