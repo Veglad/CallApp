@@ -2,6 +2,7 @@ package com.veglad.callapp.telephony
 
 import com.veglad.callapp.data_driven.Command
 import com.veglad.callapp.data_driven.DataDrivenActivity
+import com.veglad.callapp.helpers.startCoroutineTimer
 import com.veglad.callapp.view.Call
 import com.veglad.callapp.view.Call.Status.*
 import com.veglad.callapp.view.IncomingCallActivity.Props
@@ -20,11 +21,7 @@ class IncomingCallController(
         const val ONE_SECOND_IN_MS = 1000L
     }
 
-    private var state = State(
-        0,
-        Call(DISCONNECTED, ""),
-        null
-    )
+    private var state = State(0, Call(DISCONNECTED, ""))
 
     init {
         callManager.setOnUpdateCall(this::handleCall)
@@ -33,7 +30,28 @@ class IncomingCallController(
 
     private fun handleCall(call: Call) {
         Timber.tag("IncomingCallController").d("Updated")
+        timerMiddleware(call)
         dispatch(Action.CallAction(call))
+    }
+
+
+    private var job: Job? = null
+
+    private fun timerMiddleware(call: Call) {
+        when(call.status) {
+            ACTIVE -> {
+                if (this.job == null) {
+                    this.job = startCoroutineTimer(ONE_SECOND_IN_MS, ONE_SECOND_IN_MS) {
+                        dispatch(Action.TickAction)
+                    }
+                }
+            }
+            DISCONNECTED -> {
+                this.job?.cancel()
+                this.job = null
+            }
+            else -> {}
+        }
     }
 
     private fun dispatch(action: Action) {
@@ -68,12 +86,10 @@ class IncomingCallController(
                 state.copy(call = call)
             }
             ACTIVE -> {
-                val job = launchCallTimer { dispatch(Action.TickAction) }
-                state.copy(job = job)
+                state.copy(call = call)
             }
             DISCONNECTED -> {
-                state.job?.cancel()
-                state.copy(callTime = 0, job = null)
+                state.copy(callTime = 0, call = call)
             }
             UNKNOWN -> {
                 state.copy(call = call)
@@ -84,22 +100,9 @@ class IncomingCallController(
     private fun reduceCount(state: State): State {
         return state.copy(callTime = state.callTime + 1)
     }
-
-    private fun launchCallTimer(tick: () -> Unit) = launch {
-        while (true) {
-            with(Dispatchers.Default) {
-                delay(ONE_SECOND_IN_MS)
-            }
-            tick()
-        }
-    }
-
-    private fun clear() {
-        state.job?.cancel()
-    }
 }
 
-data class State(val callTime: Long, val call: Call, val job: Job?)
+data class State(val callTime: Long, val call: Call)
 sealed class Action {
     class CallAction(val call: Call): Action()
     object TickAction: Action()
