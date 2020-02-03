@@ -2,6 +2,7 @@ package com.veglad.callapp.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import com.veglad.callapp.data_driven.Command
 import com.veglad.callapp.data_driven.DataDrivenActivity
 import com.veglad.callapp.R
@@ -41,18 +42,58 @@ class IncomingCallActivity : DataDrivenActivity<IncomingCallActivity.Props>() {
 
     override fun renderProps(props: Props) {
         when(props) {
-            is Props.Connecting -> subtitleTextView.text = getString(R.string.subtitle_connecting)
-            is Props.Dialing -> subtitleTextView.text = getString(R.string.subtitle_dialing)
-            is Props.Ringing -> {
-                subtitleTextView.text = getString(R.string.subtitle_ringing)
-                calleeName.text = props.callee
-                answerImageButton?.setOnClickListener { props.answer?.invoke() }
-                rejectImageButton?.setOnClickListener { props.reject?.invoke(); finish() }
-            }
-            is Props.Active -> subtitleTextView.text = props.time.toDurationString()
-            is Props.Disconnected -> subtitleTextView.text = getString(R.string.subtitle_disconnected)
-            is Props.Unknown -> subtitleTextView.text = getString(R.string.subtitle_unknown)
+            is Props.Connecting -> renderConnectingState(props)
+            is Props.Dialing -> renderDialingState(props)
+            is Props.Ringing -> renderRingingState(props)
+            is Props.Active -> renderActiveState(props)
+            is Props.Disconnected -> renderDisconnectedState(props)
+            is Props.Unknown -> renderUnknownState(props)
         }
+    }
+
+    private fun renderUnknownState(props: Props.Unknown) {
+        answerImageButton.visibility = View.GONE
+        rejectImageButton.visibility = View.GONE
+
+        subtitleTextView.text = getString(R.string.subtitle_unknown)
+    }
+
+    private fun renderDisconnectedState(props: Props.Disconnected) {
+        answerImageButton.visibility = View.GONE
+        rejectImageButton.visibility = View.GONE
+
+        subtitleTextView.text = getString(R.string.subtitle_disconnected)
+    }
+
+    private fun renderActiveState(props: Props.Active) {
+        answerImageButton.visibility = View.GONE
+        rejectImageButton.visibility = View.VISIBLE
+
+        subtitleTextView.text = props.time.toDurationString()
+    }
+
+    private fun renderRingingState(props: Props.Ringing) {
+        answerImageButton.visibility = View.VISIBLE
+        rejectImageButton.visibility = View.VISIBLE
+
+        subtitleTextView.text = getString(R.string.subtitle_ringing)
+        calleeName.text = props.callee
+        answerImageButton?.setOnClickListener { props.answer?.invoke() }
+        rejectImageButton?.setOnClickListener { props.reject?.invoke(); finish() }
+    }
+
+    private fun renderDialingState(props: Props.Dialing) {
+        answerImageButton.visibility = View.GONE
+        rejectImageButton.visibility = View.VISIBLE
+
+        subtitleTextView.text = getString(R.string.subtitle_dialing)
+    }
+
+    private fun renderConnectingState(props: Props.Connecting) {
+        answerImageButton.visibility = View.GONE
+        rejectImageButton.visibility = View.VISIBLE
+
+        subtitleTextView.text = getString(R.string.subtitle_connecting)
     }
 
     private fun Long.toDurationString() = String.format("%02d:%02d:%02d", this / 3600, (this % 3600) / 60, (this % 60))
