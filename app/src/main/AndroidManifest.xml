@@ -14,7 +14,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.IncomingCallActivity"/>
+        <activity
+            android:theme="@style/AppThemeNoActionBar"
+            android:name=".view.IncomingCallActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,14 +38,6 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-
-<!--        <service-->
-<!--            android:name=".ConnectionService"-->
-<!--            android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.telecom.ConnectionService" />-->
-<!--            </intent-filter>-->
-<!--        </service>-->
 
         <service
             android:name=".telephony.CallService"

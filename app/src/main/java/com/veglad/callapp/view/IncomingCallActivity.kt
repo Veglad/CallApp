@@ -12,16 +12,26 @@ import com.veglad.callapp.telephony.IncomingCallNotification.Companion.INCOMING_
 import com.veglad.callapp.telephony.IncomingCallNotification.Companion.INCOMING_ACTIVITY_ANSWER_ACTION
 import com.veglad.callapp.telephony.IncomingCallNotification.Companion.INCOMING_ACTIVITY_REJECT_ACTION
 import kotlinx.android.synthetic.main.activity_incomming_call.*
-import kotlinx.coroutines.*
 import timber.log.Timber
-import java.util.*
+import android.view.WindowManager
+
+
+
 
 class IncomingCallActivity : DataDrivenActivity<IncomingCallActivity.Props>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_incomming_call)
+        makeStatusBarTransparent()
         handleIntentActionKeys(intent)
+    }
+
+    private fun makeStatusBarTransparent() {
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
     }
 
     private fun handleIntentActionKeys(intent: Intent) {
@@ -56,6 +66,7 @@ class IncomingCallActivity : DataDrivenActivity<IncomingCallActivity.Props>() {
         rejectImageButton.visibility = View.GONE
 
         subtitleTextView.text = getString(R.string.subtitle_unknown)
+        finish()
     }
 
     private fun renderDisconnectedState(props: Props.Disconnected) {
@@ -63,6 +74,7 @@ class IncomingCallActivity : DataDrivenActivity<IncomingCallActivity.Props>() {
         rejectImageButton.visibility = View.GONE
 
         subtitleTextView.text = getString(R.string.subtitle_disconnected)
+        finish()
     }
 
     private fun renderActiveState(props: Props.Active) {
@@ -79,7 +91,7 @@ class IncomingCallActivity : DataDrivenActivity<IncomingCallActivity.Props>() {
         subtitleTextView.text = getString(R.string.subtitle_ringing)
         calleeName.text = props.callee
         answerImageButton?.setOnClickListener { props.answer?.invoke() }
-        rejectImageButton?.setOnClickListener { props.reject?.invoke(); finish() }
+        rejectImageButton?.setOnClickListener { props.reject?.invoke() }
     }
 
     private fun renderDialingState(props: Props.Dialing) {
