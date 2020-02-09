@@ -66,12 +66,12 @@ class IncomingCallController(
 
     private fun mapStateToProps(state: State) : Props {
         return when(state.call.status) {
-            CONNECTING -> Props.Connecting
+            CONNECTING -> Props.Connecting(Command { callManager.cancelCall() })
             DIALING -> Props.Dialing(state.call.callee ?: "Unknown", Command { callManager.cancelCall() })
             RINGING -> Props.Ringing(state.call.callee ?: "Unknown", Command { callManager.acceptCall() }, Command { callManager.cancelCall() })
             ACTIVE -> Props.Active(state.call.callee ?: "Unknown", state.callTime, Command { callManager.cancelCall() })
             DISCONNECTED -> Props.Disconnected
-            UNKNOWN -> Props.Unknown
+            UNKNOWN -> Props.Unknown(Command { callManager.cancelCall() })
         }
     }
 

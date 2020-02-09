@@ -10,6 +10,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import com.veglad.callapp.view.IncomingCallActivity
 import com.veglad.callapp.R
+import com.veglad.callapp.helpers.IntentFactory
 import timber.log.Timber
 
 class IncomingCallNotification
@@ -47,10 +48,7 @@ class IncomingCallNotification
     fun postIncomingCallNotification(context: Context, callee: String) {
         Timber.tag("com.veglad.callapp").d("postIncomingCallNotification")
         // Create an intent which triggers your fullscreen incoming call user interface.
-        val intent = Intent(Intent.ACTION_MAIN, null).apply {
-            flags = Intent.FLAG_ACTIVITY_NO_USER_ACTION or Intent.FLAG_ACTIVITY_NEW_TASK
-            setClass(context, IncomingCallActivity::class.java)
-        }
+        val intent = IntentFactory.getIncomingCallActivityItent(context)
         val notification = initNotification(intent, context, callee)
 
         // Set notification as insistent to cause your ringtone to loop.

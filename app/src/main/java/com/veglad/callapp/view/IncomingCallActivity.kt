@@ -14,8 +14,7 @@ import com.veglad.callapp.telephony.IncomingCallNotification.Companion.INCOMING_
 import kotlinx.android.synthetic.main.activity_incomming_call.*
 import timber.log.Timber
 import android.view.WindowManager
-
-
+import kotlin.system.exitProcess
 
 
 class IncomingCallActivity : DataDrivenActivity<IncomingCallActivity.Props>() {
@@ -46,8 +45,12 @@ class IncomingCallActivity : DataDrivenActivity<IncomingCallActivity.Props>() {
             //TODO: Refactor with Redux-like
             CallManager.cancelCall()
             IncomingCallNotification.clearNotification(this)
-            finish()
+            closeApplication()
         }
+    }
+
+    private fun closeApplication() {
+        finishAndRemoveTask()
     }
 
     override fun renderProps(props: Props) {
@@ -63,10 +66,11 @@ class IncomingCallActivity : DataDrivenActivity<IncomingCallActivity.Props>() {
 
     private fun renderUnknownState(props: Props.Unknown) {
         answerImageButton.visibility = View.GONE
-        rejectImageButton.visibility = View.GONE
+        rejectImageButton.visibility = View.VISIBLE
 
+        rejectImageButton?.setOnClickListener { props.reject?.invoke() }
         subtitleTextView.text = getString(R.string.subtitle_unknown)
-        finish()
+        closeApplication()
     }
 
     private fun renderDisconnectedState(props: Props.Disconnected) {
@@ -74,22 +78,26 @@ class IncomingCallActivity : DataDrivenActivity<IncomingCallActivity.Props>() {
         rejectImageButton.visibility = View.GONE
 
         subtitleTextView.text = getString(R.string.subtitle_disconnected)
-        finish()
+        closeApplication()
     }
 
     private fun renderActiveState(props: Props.Active) {
         answerImageButton.visibility = View.GONE
         rejectImageButton.visibility = View.VISIBLE
 
+        calleeName.text = props.callee
         subtitleTextView.text = props.time.toDurationString()
+
+        rejectImageButton?.setOnClickListener { props.reject?.invoke() }
     }
 
     private fun renderRingingState(props: Props.Ringing) {
         answerImageButton.visibility = View.VISIBLE
         rejectImageButton.visibility = View.VISIBLE
 
-        subtitleTextView.text = getString(R.string.subtitle_ringing)
         calleeName.text = props.callee
+        subtitleTextView.text = getString(R.string.subtitle_ringing)
+
         answerImageButton?.setOnClickListener { props.answer?.invoke() }
         rejectImageButton?.setOnClickListener { props.reject?.invoke() }
     }
@@ -98,7 +106,10 @@ class IncomingCallActivity : DataDrivenActivity<IncomingCallActivity.Props>() {
         answerImageButton.visibility = View.GONE
         rejectImageButton.visibility = View.VISIBLE
 
+        calleeName.text = props.callee
         subtitleTextView.text = getString(R.string.subtitle_dialing)
+
+        rejectImageButton?.setOnClickListener { props.reject?.invoke() }
     }
 
     private fun renderConnectingState(props: Props.Connecting) {
@@ -106,15 +117,19 @@ class IncomingCallActivity : DataDrivenActivity<IncomingCallActivity.Props>() {
         rejectImageButton.visibility = View.VISIBLE
 
         subtitleTextView.text = getString(R.string.subtitle_connecting)
+
+        rejectImageButton?.setOnClickListener { props.reject?.invoke() }
     }
 
     private fun Long.toDurationString() = String.format("%02d:%02d:%02d", this / 3600, (this % 3600) / 60, (this % 60))
 
     sealed class Props {
-        object Connecting : Props()
+        class Connecting(
+            val reject: Command?
+        ) : Props()
         class Dialing(
             val callee: String,
-            val hangUp: Command?
+            val reject: Command?
         ) : Props()
         class Ringing(
             val callee: String,
@@ -124,9 +139,11 @@ class IncomingCallActivity : DataDrivenActivity<IncomingCallActivity.Props>() {
         class Active(
             val callee: String,
             val time: Long,
-            val hangUp: Command?
+            val reject: Command?
         ) : Props()
-        object Disconnected : Props()
-        object Unknown : Props()
+        class Unknown(
+            val reject: Command?
+        ) : Props()
+        object Disconnected: Props()
     }
 }
