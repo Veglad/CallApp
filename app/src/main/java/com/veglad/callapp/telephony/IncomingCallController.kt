@@ -2,12 +2,13 @@ package com.veglad.callapp.telephony
 
 import com.veglad.callapp.data_driven.Command
 import com.veglad.callapp.data_driven.DataDrivenActivity
+import com.veglad.callapp.db.Repository
 import com.veglad.callapp.helpers.startCoroutineTimer
 import com.veglad.callapp.view.Call
 import com.veglad.callapp.view.Call.Status.*
 import com.veglad.callapp.view.IncomingCallActivity.Props
+import com.veglad.callapp.view.Person
 import kotlinx.coroutines.*
-import org.json.JSONObject
 import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 
@@ -67,12 +68,19 @@ class IncomingCallController(
     private fun mapStateToProps(state: State) : Props {
         return when(state.call.status) {
             CONNECTING -> Props.Connecting(Command { callManager.cancelCall() })
-            DIALING -> Props.Dialing(state.call.callee ?: "Unknown", Command { callManager.cancelCall() })
-            RINGING -> Props.Ringing(state.call.callee ?: "Unknown", Command { callManager.acceptCall() }, Command { callManager.cancelCall() })
-            ACTIVE -> Props.Active(state.call.callee ?: "Unknown", state.callTime, Command { callManager.cancelCall() })
+            DIALING -> Props.Dialing(getCallee(state.call.callee), Command { callManager.cancelCall() })
+            RINGING -> Props.Ringing(getCallee(state.call.callee), Command { callManager.acceptCall() }, Command { callManager.cancelCall() })
+            ACTIVE -> Props.Active(getCallee(state.call.callee).name, state.callTime, Command { callManager.cancelCall() })
             DISCONNECTED -> Props.Disconnected
             UNKNOWN -> Props.Unknown(Command { callManager.cancelCall() })
         }
+    }
+
+    private fun getCallee(phoneNumber: String?): Person {
+        if (phoneNumber == null) return Person("Unknown")
+        val person = Repository.getPersonByPhoneNumber(phoneNumber) ?: return Person("Unknown")
+
+        return Person(person.name ?: "Unknown", person.description)
     }
 
     private fun reduce(call: Call, state: State): State {

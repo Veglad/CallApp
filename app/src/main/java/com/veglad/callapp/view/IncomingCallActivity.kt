@@ -1,5 +1,6 @@
 package com.veglad.callapp.view
 
+import android.content.ClipDescription
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -95,8 +96,8 @@ class IncomingCallActivity : DataDrivenActivity<IncomingCallActivity.Props>() {
         answerImageButton.visibility = View.VISIBLE
         rejectImageButton.visibility = View.VISIBLE
 
-        calleeName.text = props.callee
-        subtitleTextView.text = getString(R.string.subtitle_ringing)
+        calleeName.text = props.callee.name
+        subtitleTextView.text = props.callee.description ?: getString(R.string.subtitle_ringing)
 
         answerImageButton?.setOnClickListener { props.answer?.invoke() }
         rejectImageButton?.setOnClickListener { props.reject?.invoke() }
@@ -106,8 +107,8 @@ class IncomingCallActivity : DataDrivenActivity<IncomingCallActivity.Props>() {
         answerImageButton.visibility = View.GONE
         rejectImageButton.visibility = View.VISIBLE
 
-        calleeName.text = props.callee
-        subtitleTextView.text = getString(R.string.subtitle_dialing)
+        calleeName.text = props.callee.name
+        subtitleTextView.text = props.callee.description ?: getString(R.string.subtitle_dialing)
 
         rejectImageButton?.setOnClickListener { props.reject?.invoke() }
     }
@@ -128,11 +129,11 @@ class IncomingCallActivity : DataDrivenActivity<IncomingCallActivity.Props>() {
             val reject: Command?
         ) : Props()
         class Dialing(
-            val callee: String,
+            val callee: Person,
             val reject: Command?
         ) : Props()
         class Ringing(
-            val callee: String,
+            val callee: Person,
             val answer: Command?,
             val reject: Command?
         ) : Props()
@@ -147,3 +148,5 @@ class IncomingCallActivity : DataDrivenActivity<IncomingCallActivity.Props>() {
         object Disconnected: Props()
     }
 }
+
+class Person(val name: String, val description: String? = null)
